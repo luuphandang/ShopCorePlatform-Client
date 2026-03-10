@@ -1,0 +1,9 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Border -->
+  <rect x="2" y="2" width="96" height="96" rx="10" stroke="currentColor" stroke-width="4" fill="none"/>
+
+  <!-- Outlined Z -->
+  <text x="50%" y="65%" text-anchor="middle" font-size="60" font-family="Arial" fill="none" stroke="currentColor" stroke-width="4">
+    Z
+  </text>
+</svg>
