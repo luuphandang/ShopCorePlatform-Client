@@ -126,18 +126,26 @@ export default function CartItems({ cart, setCart }: ICartItemsProps) {
   };
 
   const handleRemoveItem = async (key: string) => {
+    if (!Array.isArray(cart?.order_details) || !cart.code) return;
+
+    const orderDetail = cart.order_details?.find((item) => orderDetailKey(item) === key);
+    if (!orderDetail) return;
+
+    // Optimistic: remove item from UI immediately
+    const previousCart = { ...cart };
+    setCart({
+      ...cart,
+      order_details: cart.order_details.filter((item) => orderDetailKey(item) !== key),
+    });
+
     try {
-      if (!Array.isArray(cart?.order_details) || !cart.code) return;
-
-      const orderDetail = cart.order_details?.find((item) => orderDetailKey(item) === key);
-      if (!orderDetail) return;
-
       await removeFromCart(cart.code, {
         product_id: orderDetail.product_id,
         variant_id: orderDetail.variant_id,
         conversion_unit_id: orderDetail.conversion_unit_id,
       });
 
+      // Refetch to sync with server (costs, totals, etc.)
       const { data: cartData } = await refetchCart();
       if (cartData?.myCart) {
         setCart(cartData.myCart);
@@ -149,6 +157,8 @@ export default function CartItems({ cart, setCart }: ICartItemsProps) {
         variant: 'success',
       });
     } catch (error) {
+      // Rollback on error
+      setCart(previousCart);
       toast({
         title: 'Xoá sản phẩm thất bại',
         description: StringUtil.errorMessage({ error }),
@@ -160,11 +170,20 @@ export default function CartItems({ cart, setCart }: ICartItemsProps) {
   const handleClearCart = async () => {
     if (!cart?.code) return;
 
-    await clearCart(cart.code);
+    // Optimistic: clear items from UI immediately
+    const previousCart = { ...cart };
+    setCart({ ...cart, order_details: [] });
 
-    const { data: cartData } = await refetchCart();
-    if (cartData?.myCart) {
-      setCart(cartData.myCart);
+    try {
+      await clearCart(cart.code);
+
+      const { data: cartData } = await refetchCart();
+      if (cartData?.myCart) {
+        setCart(cartData.myCart);
+      }
+    } catch {
+      // Rollback on error
+      setCart(previousCart);
     }
   };
 

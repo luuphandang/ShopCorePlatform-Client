@@ -111,7 +111,12 @@ export const useAddToCartMutation = (options?: AddToCartOptions) => {
   const [mutate, result] = useMutation<AddToCartMutation, AddToCartMutationVariables>(ADD_TO_CART, {
     errorPolicy: 'all',
     notifyOnNetworkStatusChange: true,
-    refetchQueries: ['MyCart'],
+    update(cache, { data }) {
+      if (!data?.addToCart) return;
+
+      cache.evict({ fieldName: 'myCart' });
+      cache.gc();
+    },
     ...options,
   });
 
@@ -148,7 +153,12 @@ export const useRemoveFromCartMutation = (options?: RemoveFromCartOptions) => {
     {
       errorPolicy: 'all',
       notifyOnNetworkStatusChange: true,
-      refetchQueries: ['MyCart'],
+      update(cache, { data }) {
+        if (!data?.removeFromCart) return;
+
+        cache.evict({ fieldName: 'myCart' });
+        cache.gc();
+      },
       ...options,
     },
   );
@@ -181,7 +191,12 @@ export const useClearCartMutation = (options?: ClearCartOptions) => {
   const [mutate, result] = useMutation<ClearCartMutation, ClearCartMutationVariables>(CLEAR_CART, {
     errorPolicy: 'all',
     notifyOnNetworkStatusChange: true,
-    refetchQueries: ['MyCart'],
+    update(cache, { data }) {
+      if (!data?.clearCart) return;
+
+      cache.evict({ fieldName: 'myCart' });
+      cache.gc();
+    },
     ...options,
   });
 
@@ -205,7 +220,12 @@ export const useCheckoutCartMutation = (options?: CheckoutCartOptions) => {
     {
       errorPolicy: 'all',
       notifyOnNetworkStatusChange: true,
-      refetchQueries: ['MyCart'],
+      update(cache, { data }) {
+        if (!data?.checkoutCart) return;
+
+        cache.evict({ fieldName: 'myCart' });
+        cache.gc();
+      },
       ...options,
     },
   );

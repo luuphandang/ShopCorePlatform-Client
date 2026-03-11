@@ -37,8 +37,47 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const cache = new InMemoryCache({
+  typePolicies: {
+    Product: {
+      keyFields: ['id'],
+    },
+    Category: {
+      keyFields: ['id'],
+    },
+    User: {
+      keyFields: ['id'],
+    },
+    Order: {
+      keyFields: ['id'],
+      fields: {
+        order_details: {
+          merge(_existing, incoming) {
+            return incoming;
+          },
+        },
+      },
+    },
+    OrderDetail: {
+      keyFields: ['product_id', 'variant_id', 'conversion_unit_id'],
+    },
+    ProductVariant: {
+      keyFields: ['id'],
+    },
+    ConversionUnit: {
+      keyFields: ['id'],
+    },
+    Unit: {
+      keyFields: ['id'],
+    },
+    FileUpload: {
+      keyFields: ['id'],
+    },
+  },
+});
+
 export const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache,
   link: from([
     errorLink,
     authLink,
@@ -49,13 +88,14 @@ export const client = new ApolloClient({
   ]),
   defaultOptions: {
     watchQuery: {
-      fetchPolicy: 'no-cache',
+      fetchPolicy: 'cache-first',
     },
     query: {
-      fetchPolicy: 'no-cache',
+      fetchPolicy: 'cache-first',
       errorPolicy: 'all',
     },
     mutate: {
+      fetchPolicy: 'no-cache',
       errorPolicy: 'all',
     },
   },

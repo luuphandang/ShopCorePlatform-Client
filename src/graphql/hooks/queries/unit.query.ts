@@ -23,9 +23,9 @@ export const useUnitQuery = ({ where, ...options }: GetUnitOptions) => {
     variables: {
       query: { where: JSON.stringify(where) },
     },
-    fetchPolicy: 'network-only', // Ensures fresh data from network
-    errorPolicy: 'all', // Returns both data and errors
-    notifyOnNetworkStatusChange: true, // Notifies when network status changes
+    fetchPolicy: 'cache-first',
+    errorPolicy: 'all',
+    notifyOnNetworkStatusChange: true,
     ...options,
   });
 };
@@ -35,9 +35,9 @@ export const useUnitsQuery = ({ where, pagination, order, ...options }: GetUnits
     variables: {
       query: { where: JSON.stringify(where), pagination, order: JSON.stringify(order) },
     },
-    fetchPolicy: 'network-only', // Ensures fresh data from network
-    errorPolicy: 'all', // Returns both data and errors
-    notifyOnNetworkStatusChange: true, // Notifies when network status changes
+    fetchPolicy: 'cache-first',
+    errorPolicy: 'all',
+    notifyOnNetworkStatusChange: true,
     ...options,
   });
 };
