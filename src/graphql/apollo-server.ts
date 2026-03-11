@@ -23,11 +23,14 @@ export async function getApolloServer() {
   const httpLink = new HttpLink({
     uri: GRAPHQL_URL,
     fetch: async (uri, options) => {
+      const csrfToken = cookieStore.get('csrf-token')?.value;
+
       const backendResponse = await fetch(uri, {
         ...options,
         headers: {
           ...options?.headers,
           Cookie: cookieStore.toString(),
+          ...(csrfToken ? { 'x-csrf-token': csrfToken } : {}),
         },
       });
 

@@ -19,8 +19,22 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   return;
 });
 
+function getCsrfToken(): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+
+  const match = document.cookie.match(new RegExp('(^|;\\s*)csrf-token=([^;]*)'));
+  return match?.[2];
+}
+
 const authLink = setContext((_, { headers }) => {
-  return { headers: { ...headers } };
+  const csrfToken = getCsrfToken();
+
+  return {
+    headers: {
+      ...headers,
+      ...(csrfToken ? { 'x-csrf-token': csrfToken } : {}),
+    },
+  };
 });
 
 export const client = new ApolloClient({
